@@ -149,15 +149,9 @@ int main (int argc, char *argv[])
 		extra = argv[opt_index++];
 	}
 
+	if (extra) printf ("Extra parameter = %s\n",extra);
 
-printf ("Window=%d\n",Window);
-printf ("FileA=%s\n",fileA?fileA:"NULL");
-printf ("FileB=%s\n",fileB?fileB:"NULL");
-printf ("Extra=%s\n",extra?extra:"NULL");
-
-
-return rmsdcmp(fileA, fileB, Window);
-
+	return rmsdcmp(fileA, fileB, Window);
 }
 
 
