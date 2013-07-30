@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "proginfo.h"
 
+#include "rmsdcmp.h"
+
 /*************************************************************************************************************/
 #include "myopt.h"
 
@@ -153,7 +155,9 @@ printf ("FileA=%s\n",fileA?fileA:"NULL");
 printf ("FileB=%s\n",fileB?fileB:"NULL");
 printf ("Extra=%s\n",extra?extra:"NULL");
 
-	exit(EXIT_SUCCESS);
+
+return rmsdcmp(fileA, fileB, Window);
+
 }
 
 
