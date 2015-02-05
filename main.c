@@ -151,7 +151,9 @@ int main (int argc, char *argv[])
 
 	if (extra) printf ("Extra parameter = %s\n",extra);
 
-	return rmsdcmp(fileA, fileB, Window);
+//	return rmsdcmp(fileA, fileB, Window);
+
+	return	matdist(fileA, fileB, 260, 515);
 }
 
 

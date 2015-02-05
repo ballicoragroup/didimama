@@ -16,6 +16,7 @@ static void coord_extract (const struct coordinates *c, struct coordinates *o, i
 
 void mod2_CAcoord(const struct model *m, struct coordinates *c);
 void mod2_ALLcoord(const struct model *m, struct coordinates *c, int from, int to);
+static void mod2_CAcoord_resfrom_resto(const struct model *m, struct coordinates *c, int resfrom, int resto);
 
 //=============================================================================
 
@@ -61,6 +62,120 @@ rmsdcmp(char *FILE1, char* FILE2, int window)
 	}
 
     return EXIT_SUCCESS;
+}
+
+static double distA[1000000], distB[1000000];
+
+extern int 
+matdist(char *FILE1, char* FILE2, int resfrom, int resto)
+{
+int i,j,k,n;
+double d0,d1,d2;
+
+double max = 0;
+int maxi = 0;
+int maxj = 0;
+
+double min = 0;
+int mini = 0;
+int minj = 0;
+
+	struct coordinates *a, *b; 
+	struct coordinates SCA, SCB;   
+	struct model MIA, MIB;
+
+	collectmypdb	(FILE1, &MIA);
+	collectmypdb	(FILE2, &MIB);
+	
+	mod2_CAcoord_resfrom_resto(&MIA, &SCA, resfrom, resto);
+	mod2_CAcoord_resfrom_resto(&MIB, &SCB, resfrom, resto);
+
+	if (SCA.n == 0 || SCB.n == 0 || SCA.n != SCB.n) {
+		fprintf (stderr, "Warning: File could be empty\n"); 
+		return EXIT_FAILURE;
+	} 
+
+	a = &SCA;
+	b = &SCB;
+
+	n = resto - resfrom + 1;
+	k = 0;
+	
+for (i = 0; i < n; i++) {	
+	for (j = 0; j < n; j++) {
+
+		d0 = a->atm[i][0] - a->atm[j][0];
+		d1 = a->atm[i][1] - a->atm[j][1];
+		d2 = a->atm[i][2] - a->atm[j][2];
+
+		distA[k++] = sqrt (d0*d0 + d1*d1 + d2*d2);
+	}
+}
+
+k = 0;
+for (i = 0; i < n; i++) {	
+	for (j = 0; j < n; j++) {
+
+		d0 = b->atm[i][0] - b->atm[j][0];
+		d1 = b->atm[i][1] - b->atm[j][1];
+		d2 = b->atm[i][2] - b->atm[j][2];
+
+		distB[k++] = sqrt (d0*d0 + d1*d1 + d2*d2);
+	}
+}
+
+max = 0;
+maxi = 0;
+maxj = 0;
+
+min = 0;
+mini = 0;
+minj = 0;
+
+#if 0
+k = 0;
+for (i = 0; i < n; i++) {	
+	for (j = 0; j < n; j++) {
+		double diff = distA[k]-distB[k];
+
+
+//printf ("%d %d %lf\n",i+16,j+16,diff);
+
+		printf ("%lf, ",diff); 
+		
+		k++;
+
+		if (diff > max) {max = diff; maxi = i; maxj = j;}
+		if (diff < min) {min = diff; mini = i; minj = j;}
+	}
+	printf ("\n");
+
+}
+#endif
+
+k = 0;
+for (i = 0; i < n; i++) {	
+	for (j = 0; j < n; j++) {
+		double diff = distA[k]-distB[k];
+
+		printf ("%d, %d, %lf\n",resfrom+i,resfrom+j,diff);
+		k++;
+
+		if (diff > max) {max = diff; maxi = i; maxj = j;}
+		if (diff < min) {min = diff; mini = i; minj = j;}
+	}
+}
+printf ("\n");
+
+
+
+fprintf(stderr, "(in pdb) max=%lf, maxi=%d, maxj=%d\n", max, maxi+resfrom, maxj+resfrom);
+fprintf(stderr, "(in pdb) min=%lf, mini=%d, minj=%d\n", min, mini+resfrom, minj+resfrom);
+
+fprintf(stderr, "max=%lf, maxi=%d, maxj=%d\n", max, maxi, maxj);
+fprintf(stderr, "min=%lf, mini=%d, minj=%d\n", min, mini, minj);
+
+return EXIT_SUCCESS;
 }
 
 //-----------------------------------------------------------------------------
@@ -116,6 +231,36 @@ void mod2_CAcoord(const struct model *m, struct coordinates *c)
     		break;
 		}
  	}
+ 	c->n = j;
+}
+
+static void 
+mod2_CAcoord_resfrom_resto(const struct model *m, struct coordinates *c, int resfrom, int resto)
+{
+	int i, j;
+	int n = m->n;
+	
+	for (i = 0, j = 0; i < n ; i++) {
+
+		if (m->a[i].resnumber < resfrom || m->a[i].resnumber > resto) {
+			continue;
+		}
+		
+		if (m->a[i].atmlabel[0] == 'C' && m->a[i].atmlabel[1] == 'A') {
+  			c->atm[j][0] = m->a[i].x;
+  			c->atm[j][1] = m->a[i].y;
+  			c->atm[j][2] = m->a[i].z;
+  			j++;
+    	} 
+    	if (j >= MAXATOMS) {
+    		fprintf (stderr, "Number of atoms exceeded limit\n");
+    		break;
+		}
+
+ 	}
+ 	
+ 	
+ 	
  	c->n = j;
 }
 
