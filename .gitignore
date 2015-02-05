@@ -1,3 +1,6 @@
-localrmsd
+didimama
 data/*
+*.o
+deploy.rb
+
 
