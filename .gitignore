@@ -1,5 +1,4 @@
 didimama
-data/*
 *.o
 deploy.rb
 matrix-ori.csv
