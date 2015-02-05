@@ -8,7 +8,7 @@
 #include "myopt.h"
 
 const char *license_str =
-"Copyright (c) 2012 Miguel A. Ballicora\n"
+"Copyright (c) 2015 Miguel A. Ballicora\n"
 "\n"
 "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND,\n"
 "EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES\n"
@@ -33,16 +33,18 @@ static void usage (void);
 /* VARIABLES */
 
 	static const char *copyright_str = 
-		"Copyright (c) 2013 Miguel A. Ballicora\n"
+		"Copyright (c) 2015 Miguel A. Ballicora\n"
 		"There is NO WARRANTY of any kind\n"
 		;
 
 	static const char *intro_str =
-		"Scan local differences (rmsd) between two different protein conformers\n"
+		"Obtain a delta distance matrix map (didimama)\n"
 		;
 
 	static const char *example_str =
-		"with a window of 11 residues, compare file1.pdb and file.pdb\noutput are comma separated values\n"
+		"delta distance matrix map is created from residues 260 to 519 in this example.\n"
+		"files for comparison are file1.pdb and file2.pdb\n"
+		"output is in comma separated values\n"
 		;
 
 	static const char *help_str =
@@ -51,12 +53,13 @@ static void usage (void);
 		" -L        display the license information\n"
 		" -a <file> first  input file (pdb format)\n"
 		" -b <file> second input file (pdb format)\n"
-		" -w <num>  window size in residues, default=11\n"
+		" -f <num>  first residue number included in the analysis\n"
+		" -t <num>  last  residue number included in the analysis\n"
 		"\n"
 	/*	 ....5....|....5....|....5....|....5....|....5....|....5....|....5....|....5....|*/
 		;
 
-const char *OPTION_LIST = "vha:b:Lw:";
+const char *OPTION_LIST = "vha:b:Lw:f:t:";
 
 /*
 |
@@ -68,7 +71,7 @@ int main (int argc, char *argv[])
 {
 	int op;
 	char *fileA, *fileB, *extra;
-	int Window;
+	int Resto, Resfrom;
 	int version_mode, help_mode, license_mode, input_mode;
 
 	/* defaults */
@@ -79,7 +82,8 @@ int main (int argc, char *argv[])
 	fileA        = NULL;
 	fileB        = NULL;
 	extra		 = NULL;
-	Window 		 = 11;
+	Resfrom      = 0;
+	Resto        = 0;
 
 	while (END_OF_OPTIONS != (op = options (argc, argv, OPTION_LIST))) {
 		switch (op) {
@@ -94,11 +98,16 @@ int main (int argc, char *argv[])
 			case 'b': 	input_mode = TRUE;
 					 	fileB = opt_arg;
 						break;
-			case 'w': 	if (1 != sscanf(opt_arg,"%d", &Window)) {
-							fprintf(stderr, "wrong window parameter\n");
+			case 'f': 	if (1 != sscanf(opt_arg,"%d", &Resfrom)) {
+							fprintf(stderr, "wrong residue number (from)\n");
 							exit(EXIT_FAILURE);
 						}
-						break;			
+						break;
+			case 't': 	if (1 != sscanf(opt_arg,"%d", &Resto)) {
+							fprintf(stderr, "wrong residue number (to)\n");
+							exit(EXIT_FAILURE);
+						}
+						break;						
 			//
 			case '?': 	parameter_error();
 						exit(EXIT_FAILURE);
@@ -169,7 +178,7 @@ static void parameter_error(void) {	printf ("Error in parameters\n"); return;}
 static void
 example (void)
 {
-	char *example_options = "-w 11 -a file1.pdb -b file2.pdb";
+	char *example_options = "-a file1.pdb -b file2.pdb -f 260 -t 519\n";
 	fprintf (stderr, "\n"
 		"quick example: %s %s\n"
 		"%s"

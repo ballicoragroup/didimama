@@ -1,1 +1,1 @@
-#define PROGRAM_NAME "template"
+#define PROGRAM_NAME "didimama"
