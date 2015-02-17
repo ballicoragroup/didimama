@@ -3,7 +3,7 @@
 didimama is program to measure difference distance matrix map
 Copyright 2015 Miguel A. Ballicora
 
-## Compilation and Installation in GNU/Linux
+### Compilation and Installation in GNU/Linux
 
 type
 
@@ -15,7 +15,7 @@ to generate the program and then
 
 or `sudo make install` in Ubuntu. The program is very portable, so it should be very easy to compile in other systems.
 
-## Usage
+### Usage
 
 As an example, a typical use would be
 
@@ -23,6 +23,8 @@ As an example, a typical use would be
 
 then, difference distances will be measured between `file1.pdb` and `file2.pdb` from residue 100 to 300
 The output will be in a comma separated value file `map.csv`, which can be processed with QTIplot to obtain a heat map.
+
+### Command line help
 
 There is a further help if didimama is executed with the switch -h in the command line. That is:
 ```
