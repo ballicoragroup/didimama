@@ -76,7 +76,8 @@ int main (int argc, char *argv[])
 {
 	int op;
 	char *fileA, *fileB, *extra;
-	int Resto, Resfrom;
+	int Resfrom;
+	int Resto;
 	int version_mode, help_mode, license_mode, input_mode;
 
 	/* defaults */
@@ -87,7 +88,7 @@ int main (int argc, char *argv[])
 	fileA        = NULL;
 	fileB        = NULL;
 	extra		 = NULL;
-	Resfrom      = 0;
+	Resfrom      = 1;
 	Resto        = 0;
 
 	while (END_OF_OPTIONS != (op = options (argc, argv, OPTION_LIST))) {
@@ -165,9 +166,12 @@ int main (int argc, char *argv[])
 
 	if (extra) printf ("Extra parameter = %s\n",extra);
 
-//	return rmsdcmp(fileA, fileB, Window);
+	if (Resto <= Resfrom) {
+		fprintf(stderr, "Residue if switch -t (to) should be higher than the one in switch -f (from)");
+		exit(EXIT_FAILURE);
+	}
 
-	return	matdist(fileA, fileB, 260, 515);
+	return	matdist(fileA, fileB, Resfrom, Resto);
 }
 
 
